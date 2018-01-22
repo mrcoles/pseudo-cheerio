@@ -57,3 +57,8 @@ The `config` parameter looks like:
 ```
 
 NOTE: this function creates the dependency on `cheerio`. It might make sense to remove this so a specific cheerio dep can be decoupled from this project?
+
+
+### Misc
+
+There’s an existing package that does basically the same thing called [cheerio-advanced-selectors](https://www.npmjs.com/package/cheerio-advanced-selectors).
