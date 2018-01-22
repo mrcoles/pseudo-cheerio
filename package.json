@@ -1,0 +1,26 @@
+{
+  "name": "pseudo-cheerio",
+  "version": "1.0.0",
+  "description": ":pseudo-class support for the Cheerio NodeJS module",
+  "main": "pseudo-cheerio.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrcoles/pseudo-cheerio.git"
+  },
+  "keywords": [
+    "cheerio",
+    "pseudo-class"
+  ],
+  "author": "Peter Coles",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrcoles/pseudo-cheerio/issues"
+  },
+  "homepage": "https://github.com/mrcoles/pseudo-cheerio#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2"
+  }
+}
