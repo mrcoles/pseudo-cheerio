@@ -7,9 +7,16 @@ Pseudo Cheerio
 [![Build Status](https://travis-ci.org/mrcoles/pseudo-cheerio.svg?branch=master)](https://travis-ci.org/mrcoles/pseudo-cheerio)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-### Usage
+## Supported Pseudo Class Selectors
 
-```
+*   `:first`
+*   `:last`
+*   `:eq(N)`
+*   `:closest(SELECTOR)` - NOTE: does not support whitespace in SELECTOR currently
+
+## Usage
+
+```javascript
 const cheerio = require('cheerio');
 const pcheerio = require('pseudo-cheerio');
 
@@ -19,22 +26,13 @@ pcheerio.find($, '#main table:first tbody tr');
 
 This is the same as:
 
-```
+```javascript
 $('#main table').first().find('tbody tr');
 ```
 
+## API
 
-### Supported Pseudo Elements
-
-*   :first
-*   :last
-*   :eq(N)
-*   :closest(SELECTOR) - NOTE: does not support whitespace in SELECTOR currently
-
-
-### API
-
-#### .find( $, selector, context, extra_pseudos )
+### .find( $, selector, context, extra_pseudos )
 
 Return the result of `selector` searching the given `$` content within the optional `context`. Support the `extra_pseudos` if they are specified.
 
@@ -44,7 +42,7 @@ Return the result of `selector` searching the given `$` content within the optio
 *   extra_pseudos - plain object { name: func } - optional overrides to the pseudo-cheerio.PSEUDOS object
 
 
-#### .extract( content, config ) (EXPERIMENTAL)
+### .extract( content, config ) (EXPERIMENTAL)
 
 Return an array of data extracted from the HTML string `content` based on the specified `config`.
 
@@ -62,6 +60,6 @@ The `config` parameter looks like:
 NOTE: this function creates the dependency on `cheerio`. It might make sense to remove this so a specific cheerio dep can be decoupled from this project?
 
 
-### Misc
+## Misc
 
 There’s an existing package that does basically the same thing called [cheerio-advanced-selectors](https://www.npmjs.com/package/cheerio-advanced-selectors).
