@@ -4,6 +4,8 @@ Pseudo Cheerio
 
 :pseudo-class support for the Cheerio NodeJS module.
 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+
 ### Usage
 
 ```

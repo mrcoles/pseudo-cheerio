@@ -1,6 +1,4 @@
-
 const cheerio = require('cheerio');
-
 
 // ## Pseudos
 //
@@ -11,12 +9,11 @@ const cheerio = require('cheerio');
 // `:eq(1)` -> maps to a fn named "eq" and gets called as `fn(query, 1)`
 //
 const PSEUDOS = {
-  first: (q) => q.first(),
-  last: (q) => q.last(),
+  first: q => q.first(),
+  last: q => q.last(),
   eq: (q, i) => q.eq(i),
-  closest: (q, sel) => q.closest(sel),
-}
-
+  closest: (q, sel) => q.closest(sel)
+};
 
 // ## Find
 //
@@ -33,15 +30,22 @@ const PSEUDOS = {
 // Returns the result of performing the query with the given loaded query object
 //
 function find($, query, context, extra_pseudos) {
-  let sp = query.split(_R_PSEUDOS_SPLIT).map(x => x.trim()).filter(x => x);
+  let sp = query
+    .split(_R_PSEUDOS_SPLIT)
+    .map(x => x.trim())
+    .filter(x => x);
 
   // allow additional rules to be added in
-  let pseudos = extra_pseudos ? Object.assign({}, PSEUDOS, extra_pseudos) : PSEUDOS;
+  let pseudos = extra_pseudos
+    ? Object.assign({}, PSEUDOS, extra_pseudos)
+    : PSEUDOS;
 
   sp.forEach(selector => {
     if (selector.substring(0, 1) === ':') {
       if (context === null) {
-        throw new Error(`Cannot put a pseudo ${selector} at the start of a query ${query}`);
+        throw new Error(
+          `Cannot put a pseudo ${selector} at the start of a query ${query}`
+        );
       }
 
       let { name, arg } = _parse_pseudo(selector);
@@ -58,7 +62,6 @@ function find($, query, context, extra_pseudos) {
 
   return context;
 }
-
 
 // ## Extract
 //
@@ -89,40 +92,44 @@ function extract(content, config) {
     });
   }
 
-  let result = rows.map((i, row) => {
-    let row_data = {};
+  let result = rows
+    .map((i, row) => {
+      let row_data = {};
 
-    for (let name in config.fields) {
-      let selector = config.fields[name];
-      let query = find($, selector, row);
-      let val = query.text().trim();
+      for (let name in config.fields) {
+        let selector = config.fields[name];
+        let query = find($, selector, row);
+        let val = query.text().trim();
 
-      if (blank_repeaters[name]) {
-        if (val === '') {
-          val = previous_nonblank[name] || '';
-        } else {
-          previous_nonblank[name] = val;
+        if (blank_repeaters[name]) {
+          if (val === '') {
+            val = previous_nonblank[name] || '';
+          } else {
+            previous_nonblank[name] = val;
+          }
         }
+
+        row_data[name] = val;
       }
 
-      row_data[name] = val;
-    }
+      // skip any blanks (if specified) - this map implementation filters out nulls
+      if (
+        config.skip_if_blank &&
+        config.skip_if_blank.find(x => !row_data[x])
+      ) {
+        return null;
+      }
 
-    // skip any blanks (if specified) - this map implementation filters out nulls
-    if (config.skip_if_blank && config.skip_if_blank.find(x => !row_data[x])) {
-      return null;
-    }
+      if (config.repeat_if_blank) {
+        config.repeat_if_blank;
+      }
 
-    if (config.repeat_if_blank) {
-      config.repeat_if_blank
-    }
-
-    return row_data;
-  }).get();
+      return row_data;
+    })
+    .get();
 
   return result;
 }
-
 
 // ## Helpers
 //
@@ -136,18 +143,17 @@ const _R_PSEUDOS_SPLIT = /(:[^ ]+)/g;
 //
 const _R_PSEUDO = /:([^\(]+)(\(([^\)]+)\))?/;
 
-const _is_int = (x) => x ? /^\d+$/.test(x) : false
+const _is_int = x => (x ? /^\d+$/.test(x) : false);
 
 // Parse a pseudo selector returning the name and optional arg in an object
-const _parse_pseudo = (selector) => {
+const _parse_pseudo = selector => {
   let match = selector.match(_R_PSEUDO);
   let arg = match[3];
   if (_is_int(arg)) {
     arg = parseInt(arg);
   }
   return match ? { name: match[1], arg } : null;
-}
-
+};
 
 //
 // ## Exports
