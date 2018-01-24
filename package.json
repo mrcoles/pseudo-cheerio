@@ -1,6 +1,6 @@
 {
   "name": "pseudo-cheerio",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": ":pseudo-class support for the Cheerio NodeJS module",
   "main": "pseudo-cheerio.js",
   "scripts": {
