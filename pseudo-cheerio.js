@@ -51,6 +51,8 @@ function find($, query, context, extra_pseudos) {
     ? Object.assign({}, PSEUDOS, extra_pseudos)
     : PSEUDOS;
 
+  let updated_context = false;
+
   sp.forEach((selector, i) => {
     // skip blanks
     if (!selector) {
@@ -59,6 +61,7 @@ function find($, query, context, extra_pseudos) {
     switch (i % 3) {
       case 0: // regular selector
         context = $(selector, context);
+        updated_context = true;
         break;
       case 1: // pseudo-class selector
         if (context === null) {
@@ -73,7 +76,14 @@ function find($, query, context, extra_pseudos) {
           throw new Error(`Unknown pseudo selector ${selector} in ${query}`);
         }
 
+        // extra check to wrap context that is passed directly in, so we can make
+        // sure it's a matched set and not just an element
+        if (!updated_context) {
+          context = $(context);
+        }
+
         context = fn(context, ...args);
+        updated_context = true;
         break;
       case 2: // pseudo-class arg (ignore)
         break;

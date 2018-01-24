@@ -92,11 +92,21 @@ describe('.find(...)', () => {
     });
   });
 
-  describe('start with pseudo-class element, must have valid context', () => {
+  describe('start with pseudo-class element', () => {
+    let selector = ':last h3';
+    let expected = 'section 2 - h3 1';
     let $context = $('section');
-    let query = pcheerio.find($, ':last h3', $context);
-    it('should find the last h3', () => {
-      expect(query.text().trim()).to.equals('section 2 - h3 1');
+
+    it('context as matched set should work', () => {
+      let query = pcheerio.find($, ':first h3', $context);
+      expect(query.text().trim()).to.equals('section 1 - h3 1');
+    });
+
+    it('context as element should work', () => {
+      // NOTE - $context[0] is different from $context, since the latter
+      // matches multiple elements
+      let query = pcheerio.find($, ':first h3', $context[0]);
+      expect(query.text().trim()).to.equals('section 1 - h3 1');
     });
   });
 });
