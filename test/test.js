@@ -82,6 +82,16 @@ describe('.find(...)', () => {
       expect(bad_find).to.throw();
     });
   });
+
+  describe('extra_pseudo test', () => {
+    let extra_pseudos = {
+      foo: q => q.find('.section_1-p_1')
+    };
+    let query = pcheerio.find($, 'section:foo', undefined, extra_pseudos);
+    it('should find section 1 - p 1', () => {
+      expect(query.text().trim()).to.equal('section 1 - p 1');
+    });
+  });
 });
 
 describe('.extract(...)', () => {
@@ -100,6 +110,26 @@ describe('.extract(...)', () => {
       expect(result).to.deep.equal([
         { col1: 'row 1 - col 1', col2: 'row 1 - col 2' },
         { col1: 'row 2 - col 1', col2: 'row 2 - col 2' }
+      ]);
+    });
+  });
+
+  describe('extra_pseudo extract', () => {
+    let result = pcheerio.extract(
+      html,
+      {
+        rows: 'table:trs',
+        fields: {
+          col1: 'td:eq(0)'
+        }
+      },
+      { trs: q => q.find('tr') }
+    );
+
+    it('should work with custom extra_pseudos arg', () => {
+      expect(result).to.deep.equal([
+        { col1: 'row 1 - col 1' },
+        { col1: 'row 2 - col 1' }
       ]);
     });
   });

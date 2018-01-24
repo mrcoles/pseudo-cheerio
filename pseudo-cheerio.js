@@ -49,7 +49,7 @@ function find($, query, context, extra_pseudos) {
       }
 
       let { name, arg } = _parse_pseudo(selector);
-      let fn = PSEUDOS[name];
+      let fn = pseudos[name];
       if (fn === undefined) {
         throw new Error(`Unknown pseudo selector ${selector} in ${query}`);
       }
