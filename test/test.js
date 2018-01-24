@@ -92,6 +92,14 @@ describe('.find(...)', () => {
       expect(query.text().trim()).to.equal('section 1 - p 1');
     });
   });
+
+  describe('start with pseudo-class element, must have valid context', () => {
+    let $context = $('section');
+    let query = pcheerio.find($, ':last h3', $context);
+    it('should find the last h3', () => {
+      expect(query.text().trim()).to.equals('section 2 - h3 1');
+    });
+  });
 });
 
 describe('.extract(...)', () => {

@@ -22,6 +22,9 @@ const PSEUDOS = {
 //                  except it supports various pseudo elements, like `:first`
 //                  and `:eq(1)`
 // context - cheerio query result - OPTIONAL: if specified, search within the context
+//                                  if you want to start a query with a pseudo-class
+//                                  then you'll need a context that has been wrapped in $(),
+//                                  e.g., see `rows.map` in `extract`
 // extra_pseudos - plain object - OPTIONAL: additional rules to add to the `PSEUDO` object
 //
 // NOTE: the splitting breaks for any pseudo-class arguments that have spaces in them,
@@ -54,7 +57,7 @@ function find($, query, context, extra_pseudos) {
         throw new Error(`Unknown pseudo selector ${selector} in ${query}`);
       }
 
-      context = fn(context, arg);
+      context = fn($(context), arg);
     } else {
       context = $(selector, context);
     }
@@ -94,6 +97,7 @@ function extract(content, config, extra_pseudos) {
 
   let result = rows
     .map((i, row) => {
+      let $row = $(row);
       let row_data = {};
 
       for (let name in config.fields) {
