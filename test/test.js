@@ -75,11 +75,10 @@ describe('.find(...)', () => {
     });
   });
 
-  describe(':closest(...) unsupported whitespace query', () => {
-    it('should throw an error', () => {
-      let bad_find = () =>
-        pcheerio.find($, '.section_2-h3_1:closest(#main section) p');
-      expect(bad_find).to.throw();
+  describe(':slice(1, 3) valid whitespace query', () => {
+    let query = pcheerio.find($, 'p:slice(1, 3)');
+    it('should return 2 items', () => {
+      expect(query.length).to.equal(2);
     });
   });
 

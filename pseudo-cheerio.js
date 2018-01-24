@@ -9,10 +9,24 @@ const cheerio = require('cheerio');
 // `:eq(1)` -> maps to a fn named "eq" and gets called as `fn(query, 1)`
 //
 const PSEUDOS = {
+  parent: (q, sel) => q.parent(sel),
+  parents: (q, sel) => q.parents(sel),
+  closest: (q, sel) => q.closest(sel),
+  next: (q, sel) => q.next(sel),
+  nextAll: (q, sel) => q.nextAll(sel),
+  prev: (q, sel) => q.prev(sel),
+  prevAll: (q, sel) => q.prevAll(sel),
+  slice: (q, start, end) => q.slice(start, end),
+  siblings: (q, sel) => q.siblings(sel),
+  children: (q, sel) => q.children(sel),
+  contents: q => q.contents(),
+  filter: (q, sel) => q.filter(sel),
+  not: (q, sel) => q.not(sel),
+  has: (q, sel) => q.has(sel),
   first: q => q.first(),
   last: q => q.last(),
   eq: (q, i) => q.eq(i),
-  closest: (q, sel) => q.closest(sel)
+  add: (q, sel) => q.add(sel)
 };
 
 // ## Find
@@ -27,39 +41,42 @@ const PSEUDOS = {
 //                                  e.g., see `rows.map` in `extract`
 // extra_pseudos - plain object - OPTIONAL: additional rules to add to the `PSEUDO` object
 //
-// NOTE: the splitting breaks for any pseudo-class arguments that have spaces in them,
-// the splitting regex would need to be updated to support this.
-//
 // Returns the result of performing the query with the given loaded query object
 //
 function find($, query, context, extra_pseudos) {
-  let sp = query
-    .split(_R_PSEUDOS_SPLIT)
-    .map(x => x.trim())
-    .filter(x => x);
+  let sp = query.split(_R_PSEUDOS_SPLIT).map(x => (x || '').trim());
 
   // allow additional rules to be added in
   let pseudos = extra_pseudos
     ? Object.assign({}, PSEUDOS, extra_pseudos)
     : PSEUDOS;
 
-  sp.forEach(selector => {
-    if (selector.substring(0, 1) === ':') {
-      if (context === null) {
-        throw new Error(
-          `Cannot put a pseudo ${selector} at the start of a query ${query}`
-        );
-      }
+  sp.forEach((selector, i) => {
+    // skip blanks
+    if (!selector) {
+      return;
+    }
+    switch (i % 3) {
+      case 0: // regular selector
+        context = $(selector, context);
+        break;
+      case 1: // pseudo-class selector
+        if (context === null) {
+          throw new Error(
+            `Cannot put a pseudo ${selector} at the start of a query ${query}`
+          );
+        }
 
-      let { name, arg } = _parse_pseudo(selector);
-      let fn = pseudos[name];
-      if (fn === undefined) {
-        throw new Error(`Unknown pseudo selector ${selector} in ${query}`);
-      }
+        let { name, args } = _parse_pseudo(selector);
+        let fn = pseudos[name];
+        if (fn === undefined) {
+          throw new Error(`Unknown pseudo selector ${selector} in ${query}`);
+        }
 
-      context = fn($(context), arg);
-    } else {
-      context = $(selector, context);
+        context = fn(context, ...args);
+        break;
+      case 2: // pseudo-class arg (ignore)
+        break;
     }
   });
 
@@ -139,7 +156,8 @@ function extract(content, config, extra_pseudos) {
 //
 
 // Regular expression to find any :foo or :foo(123) element
-const _R_PSEUDOS_SPLIT = /(:[^ ]+)/g;
+// splits repeat of form [0: non_match, 1: match_whole, 2: match_parens]
+const _R_PSEUDOS_SPLIT = /(:[^ \(:]+(\([^\)]+\))?)/g;
 
 // Regular expression to extract pseudo name and argument from
 // the match at index 1 and 3, e.g.,
@@ -149,14 +167,14 @@ const _R_PSEUDO = /:([^\(]+)(\(([^\)]+)\))?/;
 
 const _is_int = x => (x ? /^\d+$/.test(x) : false);
 
-// Parse a pseudo selector returning the name and optional arg in an object
+// Parse a pseudo selector returning the name and optional args in an object
 const _parse_pseudo = selector => {
   let match = selector.match(_R_PSEUDO);
-  let arg = match[3];
-  if (_is_int(arg)) {
-    arg = parseInt(arg);
-  }
-  return match ? { name: match[1], arg } : null;
+  let args = (match[3] || '')
+    .split(',')
+    .filter(x => x.trim())
+    .map(x => (_is_int(x) ? parseInt(x) : x));
+  return match ? { name: match[1], args } : null;
 };
 
 //

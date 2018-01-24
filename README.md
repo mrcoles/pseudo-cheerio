@@ -9,25 +9,51 @@ Pseudo Cheerio
 
 ## Supported Pseudo Class Selectors
 
+These all map to the equivalent [Cheerio traversing function](https://github.com/cheeriojs/cheerio#traversing):
+
+*   `:parent([selector])`
+*   `:parents([selector])`
+*   `:closest([selector])`
+*   `:next([selector])`
+*   `:nextAll([selector])`
+*   `:prev([selector])`
+*   `:prevAll([selector])`
+*   `:slice( start, [end] )`
+*   `:siblings([selector])`
+*   `:children([selector])`
+*   `:contents`
+*   `:filter([selector])`
+*   `:not(selector)`
+*   `:has(selector)`
 *   `:first`
 *   `:last`
-*   `:eq(N)`
-*   `:closest(SELECTOR)` - NOTE: does not support whitespace in SELECTOR currently
+*   `:eq(i)`
+*   `:add(selector)`
+
 
 ## Usage
+
+Importing:
 
 ```javascript
 const cheerio = require('cheerio');
 const pcheerio = require('pseudo-cheerio');
 
 const $ = cheerio.load(html);
+```
+
+Querying:
+
+```javascript
 pcheerio.find($, '#main table:first tbody tr');
+pcheerio.find($, 'table tr:slice(1, 5)');
 ```
 
 This is the same as:
 
 ```javascript
 $('#main table').first().find('tbody tr');
+$('table tr').slice(1, 5);
 ```
 
 ## API
