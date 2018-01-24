@@ -78,10 +78,10 @@ function find($, query, context, extra_pseudos) {
 //        ...
 //    }
 //
-function extract(content, config) {
+function extract(content, config, extra_pseudos) {
   const $ = cheerio.load(content);
 
-  let rows = find($, config.rows);
+  let rows = find($, config.rows, undefined, extra_pseudos);
 
   // populate data for `repeat_if_blank`
   let previous_nonblank = {};
@@ -98,7 +98,7 @@ function extract(content, config) {
 
       for (let name in config.fields) {
         let selector = config.fields[name];
-        let query = find($, selector, row);
+        let query = find($, selector, row, extra_pseudos);
         let val = query.text().trim();
 
         if (blank_repeaters[name]) {
