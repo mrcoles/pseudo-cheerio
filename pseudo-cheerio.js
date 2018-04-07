@@ -82,7 +82,12 @@ function find($, query, context, extra_pseudos) {
           context = $(context);
         }
 
-        context = fn(context, ...args);
+				if (args) {
+					context = fn(context, ...args);
+				} else {
+					context = fn(context, null);
+				}
+
         updated_context = true;
         break;
       case 2: // pseudo-class arg (ignore)
